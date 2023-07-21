@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Your meta tags and title -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="search-bar">
+    <input type="text" id="search-input" placeholder="Search for a song...">
+    <button id="search-btn"><i class="fas fa-search"></i></button>
+  </div>
+
+  <div id="music-player">
+      <p style = "font-size : 20px; text-align: center; padding-bottom : 5px; color: cyan;
+  text-shadow:
+      0 0 7px #fff,
+      0 0 10px #fff,
+      0 0 21px #fff,
+      0 0 42px #0fa,
+      0 0 82px #0fa,
+      0 0 92px #0fa,
+      0 0 102px #0fa,
+      0 0 151px #0fa;"> Useless Player <p>
+    <div id="song-info">
+      <img id="album-art" src="vaporwave-chillwave.gif" alt="Album Art">
+      <div id="song-details">
+        <h1 id="song-title">Take a chill pill!</h1>
+        <!-- Additional song details if needed -->
+      </div>
+    </div>
+
+    <div id="player">
+      <div id="video-container"> 
+      </div>
+        <div>
+          <p style = "color : orange;"> Search to play :) <p>
+        </div>
+      <div id="progress-bar">
+        <div id="progress"></div>
+      </div>
+
+      <div id="controls">
+        <button id="prev-btn"><i class="fas fa-step-backward"></i></button>
+        <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+        <button id="next-btn"><i class="fas fa-step-forward"></i></button>
+      </div>
+
+      <div id="volume-control">
+        <input type="range" id="volume-slider" min="0" max="100" step="1" value="100">
+      </div>
+      <p style = "align-text : center; font-size : 12px; padding-top : 4px; color : white;"> Developed by Hrishav & Vishal </p>
+    </div>
+    
+<div id="unavailable-message" style="color: cyan; font-size: 6px; padding: 10px; align-text : center;">
+    ⚠️ Some songs might be unavailable due to certain restrictions. Try searching remixes or paste a different link of the same song from YouTube if not of the original owner. That'll help :) Kya matlab kya chutiya developer hai!??
+  </div>
+  
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js"></script>
+</body>
+</html>
