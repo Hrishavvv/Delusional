@@ -1,11 +1,23 @@
 // JavaScript (script.js)
-const apiKey = 'AIzaSyAHIb4D8GqBy94f1VA2TZEh26qkeEM0Z_8'; // Replace 'YOUR_YOUTUBE_API_KEY' with your actual YouTube API key
+
+const apiKeys = [
+  'AIzaSyAHIb4D8GqBy94f1VA2TZEh26qkeEM0Z_8', // Replace 'API_KEY_1', 'API_KEY_2', etc. with your actual YouTube API keys
+  'API_KEY_2',
+  'API_KEY_3',
+  // Add more API keys as needed
+];
+
+let currentApiKeyIndex = 0; // Index of the currently active API key
+let currentApiKey = apiKeys[currentApiKeyIndex];
+
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const playerContainer = document.getElementById('player-container');
 const videoContainer = document.getElementById('video-container');
 const songTitle = document.getElementById('song-title');
 const playPauseBtn = document.getElementById('play-pause-btn');
+const forwardBtn = document.getElementById('next-btn');
+const backwardBtn = document.getElementById('prev-btn');
 const unavailableMessageElement = document.getElementById('unavailable-message');
 
 let player;
@@ -66,13 +78,34 @@ searchBtn.addEventListener('click', () => {
   }
 });
 
+// Function to get the next API key in the rotation
+function getNextApiKey() {
+  currentApiKeyIndex = (currentApiKeyIndex + 1) % apiKeys.length;
+  currentApiKey = apiKeys[currentApiKeyIndex];
+}
+
+// Function to check if the API key quota has been reached
+function isQuotaExceeded(response) {
+  return response && response.error && response.error.errors.some((error) => {
+    return error.reason === 'quotaExceeded' || error.reason === 'dailyLimitExceeded';
+  });
+}
+
 function searchVideo(searchTerm) {
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
     searchTerm
-  )}&key=${apiKey}&maxResults=15&type=video`; // Increased maxResults to 15 to get more search results
+  )}&key=${currentApiKey}&maxResults=15&type=video`;
 
   fetch(url)
-    .then((response) => response.json())
+    .then((response) => {
+      if (isQuotaExceeded(response)) {
+        // If quota is exceeded, switch to the next API key and retry the search
+        getNextApiKey();
+        return searchVideo(searchTerm);
+      } else {
+        return response.json();
+      }
+    })
     .then((data) => {
       console.log(JSON.stringify(data)); // Output the data to the console for debugging
       if (data.items && data.items.length > 0) {
@@ -154,3 +187,24 @@ playPauseBtn.addEventListener('click', () => {
     }
   }
 });
+
+// Function to seek forward by 10 seconds
+function seekForward() {
+  if (player && player.getCurrentTime) {
+    const currentTime = player.getCurrentTime();
+    const newTime = currentTime + 10;
+    player.seekTo(newTime, true);
+  }
+}
+
+// Function to seek backward by 10 seconds
+function seekBackward() {
+  if (player && player.getCurrentTime) {
+    const currentTime = player.getCurrentTime();
+    const newTime = currentTime - 10;
+    player.seekTo(newTime, true);
+  }
+}
+
+forwardBtn.addEventListener('click', seekForward);
+backwardBtn.addEventListener('click', seekBackward);
