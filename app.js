@@ -39,6 +39,8 @@ function onYouTubeIframeAPIReady() {
       onStateChange: onPlayerStateChange,
       onError: (event) => {
         console.error('YouTube Player Error:', event.data);
+        videoTitle = 'Video not found or unembeddable';
+        updateSongTitle(videoTitle);
         showUnavailableMessage();
       }
     }
@@ -156,14 +158,20 @@ function searchVideo(searchTerm) {
             videoContainer.style.zIndex = '1';
           }
         } else {
+          videoTitle = 'Video not found or unembeddable';
+          updateSongTitle(videoTitle);
           showUnavailableMessage();
         }
       } else {
+        videoTitle = 'Video not found or unembeddable';
+        updateSongTitle(videoTitle);
         showUnavailableMessage();
       }
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
+      videoTitle = 'Video not found or unembeddable';
+      updateSongTitle(videoTitle);
       showUnavailableMessage();
     });
 }
@@ -192,7 +200,7 @@ function pauseVideo() {
 
 function updateSongTitle(title) {
   songTitle.textContent = title;
-  if (title === 'Take a chill pill!') {
+  if (title === 'Take a chill pill!' || title === 'Uh oh we ran into an error!') {
     unavailableMessageElement.style.display = 'block';
   } else {
     unavailableMessageElement.style.display = 'none';
