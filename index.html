@@ -1,64 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!-- Your meta tags and title -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Useless Player</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="search-bar">
-    <input type="text" id="search-input" placeholder="Search for a song...">
-    <button id="search-btn"><i class="fas fa-search"></i></button>
-  </div>
-
-  <div id="music-player">
-      <p style = "font-size : 20px; text-align: center; padding-bottom : 5px; color: cyan;
-  text-shadow:
-      0 0 7px #fff,
-      0 0 10px #fff,
-      0 0 21px #fff,
-      0 0 42px #0fa,
-      0 0 82px #0fa,
-      0 0 92px #0fa,
-      0 0 102px #0fa,
-      0 0 151px #0fa;"> Useless Player <p>
+  <div id="music-player" class="dark-mode">
+    <div id="theme-toggle">
+      <i class="fas fa-moon"></i>
+    </div>
+    <div id="search-bar">
+      <input type="text" id="search-input" placeholder="Search for a song...">
+      <button id="search-btn"><i class="fas fa-search"></i></button>
+    </div>
     <div id="song-info">
-      <img id="album-art" src="asth.gif" alt="Album Art">
+      <div id="album-art-container">
+        <img id="album-art" src="asth.gif" alt="Album Art">
+        <div id="video-container"></div>
+      </div>
       <div id="song-details">
         <h1 id="song-title">Take a chill pill!</h1>
-        <!-- Additional song details if needed -->
       </div>
     </div>
-
     <div id="player">
-      <div id="video-container"> 
-      </div>
-        <div>
-          <p style = "color : orange;"> Search to play :) <p>
-        </div>
       <div id="progress-bar">
         <div id="progress"></div>
       </div>
-
       <div id="controls">
-        <button id="prev-btn"><i class="fa-solid fa-backward fa-beat"></i></button>
+        <button id="prev-btn"><i class="fas fa-backward-step"></i></button>
         <button id="play-pause-btn"><i class="fas fa-play"></i></button>
-        <button id="next-btn"><i class="fa-solid fa-forward fa-beat"></i></button>
+        <button id="next-btn"><i class="fas fa-forward-step"></i></button>
       </div>
-
       <div id="volume-control">
+        <i class="fas fa-volume-low"></i>
         <input type="range" id="volume-slider" min="0" max="100" step="1" value="100">
+        <i class="fas fa-volume-high"></i>
       </div>
-      <p style = "align-text : center; font-size : 9px; padding-top : 4px; color : white;"> Developed by Hrishav, Vishal & Hardik </p>
     </div>
-    
-<div id="unavailable-message" style="color: cyan; font-size: 10px; padding: 12px;">
- <code style = "align-text : center;" > The Useless Co.™</code>
+    <div id="unavailable-message">
+      <code>The Useless Co.™</code>
+    </div>
   </div>
-    
-   <script src="https://www.youtube.com/iframe_api"></script>
+  <footer>
+    <p>Made w/❤️ by Hrishav</p>
+  </footer>
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="app.js"></script>
-    
-  <script src="https://kit.fontawesome.com/f663b725bc.js" crossorigin="anonymous"></script>
-  </body>
+</body>
 </html>
