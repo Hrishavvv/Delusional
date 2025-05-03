@@ -1,256 +1,250 @@
-const apiKeys = [
-  'AIzaSyAHIb4D8GqBy94f1VA2TZEh26qkeEM0Z_8',
-  'AIzaSyC3i3luHWU-RdPoaztR5Do4A0Uk2SDNSHE',
-];
-let currentApiKeyIndex = 0;
-let currentApiKey = apiKeys[currentApiKeyIndex];
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
-const videoContainer = document.getElementById('video-container');
-const songTitle = document.getElementById('song-title');
-const albumArt = document.getElementById('album-art');
-const playPauseBtn = document.getElementById('play-pause-btn');
-const forwardBtn = document.getElementById('next-btn');
-const backwardBtn = document.getElementById('prev-btn');
-const progressBar = document.getElementById('progress-bar');
-const progress = document.getElementById('progress');
-const volumeSlider = document.getElementById('volume-slider');
-const unavailableMessageElement = document.getElementById('unavailable-message');
-const themeToggle = document.getElementById('theme-toggle');
-let player;
-let videoTitle = 'Take a chill pill!';
-let isPlaying = false;
-let isFirstSearch = true;
+document.addEventListener('DOMContentLoaded', function() {
+    const musicPlayer = document.getElementById('music-player');
+    const themeToggle = document.getElementById('theme-toggle');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const albumArt = document.getElementById('album-art');
+    const songTitle = document.getElementById('song-title');
+    const songArtist = document.getElementById('song-artist');
+    const progressBar = document.getElementById('progress-bar');
+    const progress = document.getElementById('progress');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const volumeSlider = document.getElementById('volume-slider');
+    const audioPlayer = document.getElementById('audio-player');
+    const unavailableMessage = document.getElementById('unavailable-message');
+    const loopBtn = document.getElementById('loop-btn');
+    
+    let currentSongIndex = 0;
+    let songs = [];
+    let isPlaying = false;
+    let loopState = 0;
+    let hasLoopedOnce = false;
+    let isTypingInSearch = false;
 
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('video-container', {
-    height: '100%',
-    width: '100%',
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      loop: 0,
-      modestbranding: 1,
-      rel: 0,
-      showinfo: 0
-    },
-    events: {
-      onReady: onPlayerReady,
-      onStateChange: onPlayerStateChange,
-      onError: (event) => {
-        console.error('YouTube Player Error:', event.data);
-        videoTitle = 'Video not found or unembeddable';
-        updateSongTitle(videoTitle);
-        showUnavailableMessage();
-      }
-    }
-  });
-}
+    searchInput.addEventListener('focus', function() {
+        isTypingInSearch = true;
+    });
 
-function onPlayerReady(event) {
-  updateSongTitle(videoTitle);
-  volumeSlider.addEventListener('input', () => {
-    player.setVolume(volumeSlider.value);
-  });
-  setInterval(updateProgressBar, 1000);
-  progressBar.addEventListener('click', (e) => {
-    const rect = progressBar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const seekPercentage = clickX / width;
-    const duration = player.getDuration();
-    const seekTime = seekPercentage * duration;
-    player.seekTo(seekTime, true);
-  });
-}
-
-function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.PLAYING) {
-    videoTitle = player.getVideoData().title || 'Unknown Title';
-    updateSongTitle(videoTitle);
-    isPlaying = true;
-    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-  } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-    videoTitle = 'Take a chill pill!';
-    updateSongTitle(videoTitle);
-    isPlaying = false;
-    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-  }
-}
-
-function updateProgressBar() {
-  if (player && player.getCurrentTime && player.getDuration) {
-    const currentTime = player.getCurrentTime();
-    const duration = player.getDuration();
-    const progressPercent = (currentTime / duration) * 100;
-    progress.style.width = `${progressPercent}%`;
-  }
-}
-
-function performSearch() {
-  const searchTerm = searchInput.value.trim();
-  if (searchTerm) {
-    if (player && isPlaying) {
-      pauseVideo();
-    }
-    searchVideo(searchTerm);
-  }
-}
-
-searchBtn.addEventListener('click', performSearch);
-
-searchInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    performSearch();
-  }
-});
-
-function getNextApiKey() {
-  currentApiKeyIndex = (currentApiKeyIndex + 1) % apiKeys.length;
-  currentApiKey = apiKeys[currentApiKeyIndex];
-}
-
-function isQuotaExceeded(response) {
-  return response.status === 403;
-}
-
-function searchVideo(searchTerm) {
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-    searchTerm
-  )}&key=${currentApiKey}&maxResults=15&type=video`;
-  fetch(url)
-    .then((response) => {
-      if (isQuotaExceeded(response)) {
-        getNextApiKey();
-        return searchVideo(searchTerm);
-      }
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.items && data.items.length > 0) {
-        let videoId;
-        let thumbnailUrl;
-        for (let i = 0; i < data.items.length; i++) {
-          if (data.items[i].id && data.items[i].id.videoId) {
-            videoId = data.items[i].id.videoId;
-            videoTitle = data.items[i].snippet.title;
-            thumbnailUrl = data.items[i].snippet.thumbnails.high.url;
-            break;
-          }
-        }
-        if (videoId) {
-          playVideoById(videoId);
-          albumArt.src = thumbnailUrl;
-          videoTitle = data.items[0].snippet.title;
-          updateSongTitle(videoTitle);
-          hideUnavailableMessage();
-          if (isFirstSearch) {
-            albumArt.style.zIndex = '1';
-            videoContainer.style.opacity = '1';
-            videoContainer.style.zIndex = '2';
-            isFirstSearch = false;
-          } else {
-            albumArt.style.zIndex = '2';
-            videoContainer.style.opacity = '0';
-            videoContainer.style.zIndex = '1';
-          }
+    searchInput.addEventListener('blur', function() {
+        isTypingInSearch = false;
+    });
+    
+    themeToggle.addEventListener('click', function() {
+        musicPlayer.classList.toggle('dark-mode');
+        musicPlayer.classList.toggle('light-mode');
+        const icon = themeToggle.querySelector('i');
+        if (musicPlayer.classList.contains('light-mode')) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
         } else {
-          videoTitle = 'Video not found or unembeddable';
-          updateSongTitle(videoTitle);
-          showUnavailableMessage();
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
         }
-      } else {
-        videoTitle = 'Video not found or unembeddable';
-        updateSongTitle(videoTitle);
-        showUnavailableMessage();
-      }
-    })
-    .catch((error) => {
-      console.error('Error fetching data:', error);
-      videoTitle = 'Video not found or unembeddable';
-      updateSongTitle(videoTitle);
-      showUnavailableMessage();
     });
-}
-
-function playVideoById(videoId) {
-  if (player) {
-    player.loadVideoById({
-      videoId: videoId,
-      startSeconds: 0,
-      suggestedQuality: 'highres'
+    
+    searchBtn.addEventListener('click', searchSong);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchSong();
+        }
     });
-    videoContainer.style.display = 'block';
-    player.playVideo();
-    isPlaying = true;
-    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-  }
-}
-
-function pauseVideo() {
-  if (player) {
-    player.pauseVideo();
-    isPlaying = false;
-    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-  }
-}
-
-function updateSongTitle(title) {
-  songTitle.textContent = title;
-  if (title === 'Take a chill pill!' || title === 'Uh oh we ran into an error!') {
-    unavailableMessageElement.style.display = 'block';
-  } else {
-    unavailableMessageElement.style.display = 'none';
-  }
-}
-
-function showUnavailableMessage() {
-  unavailableMessageElement.style.display = 'block';
-}
-
-function hideUnavailableMessage() {
-  unavailableMessageElement.style.display = 'none';
-}
-
-playPauseBtn.addEventListener('click', () => {
-  if (player) {
-    if (isPlaying) {
-      pauseVideo();
-    } else {
-      player.playVideo();
-      isPlaying = true;
-      playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    
+    loopBtn.addEventListener('click', function() {
+        loopState = (loopState + 1) % 3;
+        hasLoopedOnce = false;
+        updateLoopButton();
+    });
+    
+    function updateLoopButton() {
+        switch(loopState) {
+            case 0:
+                loopBtn.innerHTML = '<i class="fas fa-repeat"></i>';
+                loopBtn.style.color = '';
+                break;
+            case 1:
+                loopBtn.innerHTML = '<i class="fas fa-repeat"></i><span class="loop-count">1</span>';
+                loopBtn.style.color = '#007bff';
+                break;
+            case 2:
+                loopBtn.innerHTML = '<i class="fas fa-infinity"></i>';
+                loopBtn.style.color = '#007bff';
+                break;
+        }
     }
-  }
-});
-
-function seekForward() {
-  if (player && player.getCurrentTime) {
-    const currentTime = player.getCurrentTime();
-    const newTime = currentTime + 10;
-    player.seekTo(newTime, true);
-  }
-}
-
-function seekBackward() {
-  if (player && player.getCurrentTime) {
-    const currentTime = player.getCurrentTime();
-    const newTime = currentTime - 10;
-    player.seekTo(newTime, true);
-  }
-}
-
-forwardBtn.addEventListener('click', seekForward);
-backwardBtn.addEventListener('click', seekBackward);
-
-themeToggle.addEventListener('click', () => {
-  const musicPlayer = document.getElementById('music-player');
-  musicPlayer.classList.toggle('dark-mode');
-  musicPlayer.classList.toggle('light-mode');
-  themeToggle.innerHTML = musicPlayer.classList.contains('dark-mode')
-    ? '<i class="fas fa-moon"></i>'
-    : '<i class="fas fa-sun"></i>';
+    
+    async function searchSong() {
+        const query = searchInput.value.trim();
+        if (!query) {
+            updateUnavailableMessage("Please enter a song name");
+            return;
+        }
+        
+        updateUnavailableMessage(`Searching for "${query}"...`);
+        
+        try {
+            const response = await fetch(`https://saavn.dev/api/search/songs?query=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            songs = data.data.results;
+            if (!songs || songs.length === 0) {
+                updateUnavailableMessage("No songs found");
+                return;
+            }
+            
+            currentSongIndex = 0;
+            playSong(songs[currentSongIndex]);
+        } catch (error) {
+            console.error("Error:", error);
+            updateUnavailableMessage("Something went wrong");
+        }
+    }
+    
+    function decodeHtmlEntities(text) {
+        const textArea = document.createElement('textarea');
+        textArea.innerHTML = text;
+        return textArea.value;
+    }
+    
+    function playSong(song) {
+        const downloads = song.downloadUrl || [];
+        let audioUrl = null;
+        
+        const qualityPriority = ["320kbps", "160kbps", "96kbps"];
+        
+        for (const quality of qualityPriority) {
+            const cdn = downloads.find(dl => 
+                dl.quality === quality && dl.url.includes("aac.saavncdn.com")
+            );
+            if (cdn) {
+                audioUrl = cdn.url;
+                break;
+            }
+        }
+        
+        if (audioUrl) {
+            audioPlayer.src = audioUrl;
+            const thumb = song.image?.find(img => img.quality === "500x500")?.url || "";
+            
+            songTitle.textContent = decodeHtmlEntities(song.name);
+            songArtist.textContent = decodeHtmlEntities(song.artists?.primary?.[0]?.name || "Unknown");
+            albumArt.src = thumb || 'asth.gif';
+            
+            audioPlayer.play()
+                .then(() => {
+                    isPlaying = true;
+                    updatePlayPauseIcon();
+                    updateUnavailableMessage(`Now playing: ${decodeHtmlEntities(song.name)}`);
+                })
+                .catch(error => {
+                    console.error("Playback error:", error);
+                    updateUnavailableMessage("Playback error. Check console.");
+                });
+        } else {
+            updateUnavailableMessage("No playable CDN link found");
+        }
+    }
+    
+    function updatePlayPauseIcon() {
+        if (isPlaying) {
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            playPauseBtn.querySelector('i').classList.add('pulse-animation');
+        } else {
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.querySelector('i').classList.remove('pulse-animation');
+        }
+    }
+    
+    function togglePlayPause() {
+        if (audioPlayer.src) {
+            if (isPlaying) {
+                audioPlayer.pause();
+            } else {
+                audioPlayer.play();
+            }
+            isPlaying = !isPlaying;
+            updatePlayPauseIcon();
+        }
+    }
+    
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.code === 'Space' && !isTypingInSearch) {
+            e.preventDefault();
+            togglePlayPause();
+        }
+    });
+    
+    prevBtn.addEventListener('click', function() {
+        if (songs.length > 0) {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            playSong(songs[currentSongIndex]);
+        }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        if (songs.length > 0) {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            playSong(songs[currentSongIndex]);
+        }
+    });
+    
+    audioPlayer.addEventListener('timeupdate', function() {
+        const currentTime = audioPlayer.currentTime;
+        const duration = audioPlayer.duration || 1;
+        progress.style.width = `${(currentTime / duration) * 100}%`;
+    });
+    
+    progressBar.addEventListener('click', function(e) {
+        if (audioPlayer.src) {
+            audioPlayer.currentTime = (e.offsetX / this.clientWidth) * audioPlayer.duration;
+        }
+    });
+    
+    volumeSlider.addEventListener('input', function() {
+        audioPlayer.volume = this.value / 100;
+    });
+    
+    function updateUnavailableMessage(message) {
+        unavailableMessage.innerHTML = `<code>${message}</code>`;
+    }
+    
+    audioPlayer.addEventListener('ended', function() {
+        if (loopState === 1) {
+            if (!hasLoopedOnce) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
+                hasLoopedOnce = true;
+            } else {
+                if (songs.length > 0) {
+                    currentSongIndex = (currentSongIndex + 1) % songs.length;
+                    playSong(songs[currentSongIndex]);
+                }
+                hasLoopedOnce = false;
+            }
+        } else if (loopState === 2) {
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+        } else {
+            if (songs.length > 0) {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+                playSong(songs[currentSongIndex]);
+            } else {
+                isPlaying = false;
+                updatePlayPauseIcon();
+            }
+        }
+    });
+    
+    audioPlayer.addEventListener('play', function() {
+        isPlaying = true;
+        updatePlayPauseIcon();
+    });
+    
+    audioPlayer.addEventListener('pause', function() {
+        isPlaying = false;
+        updatePlayPauseIcon();
+    });
 });
