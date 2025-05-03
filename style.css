@@ -30,7 +30,7 @@ body {
 }
 
 #music-player.light-mode {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(238, 184, 200, 0.95);
   color: #333;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
@@ -144,7 +144,7 @@ body {
   height: 8px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -156,6 +156,37 @@ body {
   width: 0;
   border-radius: 4px;
   transition: width 0.1s linear;
+}
+
+#player-options {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+
+#loop-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+#loop-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.loop-count {
+  font-size: 10px;
+  margin-left: 2px;
+  font-weight: bold;
 }
 
 #controls {
@@ -249,33 +280,33 @@ footer p {
 
 @media (max-width: 600px) {
   #music-player {
-    padding: 20px;
+      padding: 20px;
   }
   #album-art-container {
-    width: 120px;
-    height: 120px;
+      width: 120px;
+      height: 120px;
   }
   #song-title {
-    font-size: 20px;
+      font-size: 20px;
   }
   #controls button {
-    padding: 12px;
-    font-size: 18px;
+      padding: 12px;
+      font-size: 18px;
   }
   #volume-slider {
-    width: 80px;
+      width: 80px;
   }
   #search-bar {
-    padding: 3px;
-    width: 90%;
-    max-width: 350px;
-    margin: 40px auto 20px;
+      padding: 3px;
+      width: 90%;
+      max-width: 350px;
+      margin: 40px auto 20px;
   }
   #search-input {
-    font-size: 13px;
-    padding: 8px;
+      font-size: 13px;
+      padding: 8px;
   }
   #search-btn {
-    padding: 8px;
+      padding: 8px;
   }
 }
