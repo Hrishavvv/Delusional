@@ -5,68 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Useless Player</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app" class="dark-mode">
-    <div id="main-content">
-      <div id="sidebar">
-        <div id="logo">Useless Player</div>
-        <div id="theme-toggle">
-          <i class="fas fa-moon"></i>
-        </div>
+  <div id="music-player" class="dark-mode">
+    <div id="theme-toggle">
+      <i class="fas fa-moon"></i>
+    </div>
+    <div id="search-bar">
+      <input type="text" id="search-input" placeholder="Search for a song...">
+      <button id="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+    <div id="song-info">
+      <div id="album-art-container">
+        <img id="album-art" src="asth.gif" alt="Album Art">
+        <div id="video-container"></div>
       </div>
-      
-      <div id="content-area">
-        <div id="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" id="search-input" placeholder="Search for songs...">
-        </div>
-        
-        <div id="now-playing">
-          <div id="album-art-container">
-            <img id="album-art" src="asth.gif" alt="Album Art">
-          </div>
-          <div id="song-details">
-            <h1 id="song-title">Take a chill pill!</h1>
-            <p id="song-artist"></p>
-          </div>
-        </div>
+      <div id="song-details">
+        <h1 id="song-title">Take a chill pill!</h1>
+        <p id="song-artist"></p>
       </div>
     </div>
-    
-    <div id="player-controls">
-      <div id="progress-container">
-        <div id="progress-bar">
-          <div id="progress"></div>
-        </div>
-        <div id="time-display">
-          <span id="current-time">0:00</span>
-          <span id="duration">0:00</span>
-        </div>
+    <div id="player">
+      <div id="progress-bar">
+        <div id="progress"></div>
       </div>
-      
-      <div id="controls">
-        <div id="player-buttons">
-          <button id="prev-btn"><i class="fas fa-step-backward"></i></button>
-          <button id="play-pause-btn"><i class="fas fa-play"></i></button>
-          <button id="next-btn"><i class="fas fa-step-forward"></i></button>
-        </div>
+      <div id="player-options">
         <button id="loop-btn"><i class="fas fa-repeat"></i></button>
       </div>
-      
-      <div id="unavailable-message">
-        <code>The Useless Co.™</code>
+      <div id="controls">
+        <button id="prev-btn"><i class="fas fa-backward-step"></i></button>
+        <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+        <button id="next-btn"><i class="fas fa-forward-step"></i></button>
+      </div>
+      <div id="volume-control">
+        <i class="fas fa-volume-low"></i>
+        <input type="range" id="volume-slider" min="0" max="100" step="1" value="100">
+        <i class="fas fa-volume-high"></i>
       </div>
     </div>
-    
-    <footer>
-      <p>Made w/❤️ by Hrishav</p>
-    </footer>
+    <div id="unavailable-message">
+      <code>The Useless Co.™</code>
+    </div>
   </div>
-  
-  <audio id="audio-player"></audio>
+  <footer>
+    <p>Made w/❤️ by Hrishav</p>
+  </footer>
+  <audio id="audio-player" hidden></audio>
   <script src="app.js"></script>
 </body>
 </html>
