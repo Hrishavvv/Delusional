@@ -18,6 +18,16 @@ window.customSongs = [
         image: [
             { quality: "500x500", url: "https://c.saavncdn.com/292/Attention-English-2017-20190607043124-500x500.jpg" }
         ]
+    },
+    {
+        name: "Blinding Lights",
+        artists: { primary: [{ name: "The Weeknd" }] },
+        downloadUrl: [
+            { quality: "160kbps", url: "https://aac.saavncdn.com/077/ca4e2f2e5fdfa250bb5e70e4ab0c0008_160.mp4" }
+        ],
+        image: [
+            { quality: "500x500", url: "https://c.saavncdn.com/077/After-Hours-English-2020-20240207070330-500x500.jpg" }
+        ]
     }
 
     
